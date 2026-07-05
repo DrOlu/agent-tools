@@ -51,8 +51,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           DATE=$(date -u +"%Y-%m-%d")
-          git commit -m "chore(tools): auto-update binaries ($DATE)
-
-  Updated by the daily update-tools workflow from upstream GitHub releases.
-  See tools-manifest.json for sources and .tool-versions.json for pinned tags."
+          git commit -m "chore(tools): auto-update binaries ($DATE)"
           git push
