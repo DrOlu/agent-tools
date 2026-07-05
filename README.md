@@ -121,7 +121,7 @@ How it works:
 
 The workflow authenticates to the GitHub API and pushes back with the built-in `GITHUB_TOKEN` (which has `contents: write` — enough to commit, create the release, and upload assets) — **no stored PAT required**.
 
-### Auto-updated tools (28 in-tree + 3 release assets = 31)
+### Auto-updated tools (30 manifest entries → 33 binaries)
 
 In-tree tools (≤100 MB, committed to the repo):
 
