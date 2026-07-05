@@ -1,0 +1,159 @@
+{
+  "_comment": "Manifest of agent-tools that can be auto-updated from upstream GitHub releases (Windows x64). The updater fetches the latest release of each repo, matches the asset_glob (preferring amd64/x64), downloads it, unzips if 'zip' is true (finding the exe via exe_glob), and renames the result to 'name' (hyphens/suffix stripped to the canonical tool name). Tools without a public Windows release asset are intentionally omitted (see README).",
+  "tools": [
+    {
+      "name": "jq.exe",
+      "repo": "jqlang/jq",
+      "asset_glob": "jq-windows-amd64*.exe",
+      "zip": false
+    },
+    {
+      "name": "rg.exe",
+      "repo": "BurntSushi/ripgrep",
+      "asset_glob": "ripgrep-*-x86_64-pc-windows-msvc.zip",
+      "zip": true,
+      "exe_glob": "**/rg.exe"
+    },
+    {
+      "name": "nats.exe",
+      "repo": "nats-io/natscli",
+      "asset_glob": "nats-*-windows-amd64.zip",
+      "zip": true,
+      "exe_glob": "**/nats.exe"
+    },
+    {
+      "name": "nats-server.exe",
+      "repo": "nats-io/nats-server",
+      "asset_glob": "nats-server-v*-windows-amd64.zip",
+      "zip": true,
+      "exe_glob": "**/nats-server.exe"
+    },
+    {
+      "name": "himalaya.exe",
+      "repo": "pimalaya/himalaya",
+      "asset_glob": "himalaya.x86_64-windows.zip",
+      "zip": true,
+      "exe_glob": "**/himalaya.exe"
+    },
+    {
+      "name": "netwatch.exe",
+      "repo": "matthart1983/netwatch",
+      "asset_glob": "netwatch-windows-x86_64*.zip",
+      "zip": true,
+      "exe_glob": "**/netwatch.exe"
+    },
+    {
+      "name": "rustnet.exe",
+      "repo": "domcyrus/rustnet",
+      "asset_glob": "rustnet-*-x86_64-pc-windows-msvc.zip",
+      "zip": true,
+      "exe_glob": "**/rustnet.exe"
+    },
+    {
+      "name": "websocat.exe",
+      "repo": "vi/websocat",
+      "asset_glob": "websocat.x86_64-pc-windows-gnu.exe",
+      "zip": false
+    },
+    {
+      "name": "websocketd.exe",
+      "repo": "joewalnes/websocketd",
+      "asset_glob": "websocketd-*-windows_amd64.zip",
+      "zip": true,
+      "exe_glob": "**/websocketd.exe"
+    },
+    {
+      "name": "task.exe",
+      "repo": "go-task/task",
+      "asset_glob": "task_windows_amd64.zip",
+      "zip": true,
+      "exe_glob": "**/task.exe"
+    },
+    {
+      "name": "uv.exe",
+      "repo": "astral-sh/uv",
+      "asset_glob": "uv-x86_64-pc-windows-msvc.zip",
+      "zip": true,
+      "exe_glob": "**/uv.exe"
+    },
+    {
+      "name": "kagent.exe",
+      "repo": "kagent-dev/kagent",
+      "asset_glob": "kagent-windows-amd64.exe",
+      "zip": false
+    },
+    {
+      "name": "multica.exe",
+      "repo": "multica-ai/multica",
+      "asset_glob": "multica-cli-*-windows-amd64.zip",
+      "zip": true,
+      "exe_glob": "**/multica*.exe"
+    },
+    {
+      "name": "opensre.exe",
+      "repo": "Tracer-Cloud/opensre",
+      "asset_glob": "opensre_*_windows-x64.zip",
+      "zip": true,
+      "exe_glob": "**/opensre.exe"
+    },
+    {
+      "name": "stakpak.exe",
+      "repo": "stakpak/agent",
+      "asset_glob": "stakpak-windows-x86_64.zip",
+      "zip": true,
+      "exe_glob": "**/stakpak.exe"
+    },
+    {
+      "name": "agentsecrets.exe",
+      "repo": "The-17/agentsecrets",
+      "asset_glob": "agentsecrets_*_windows_amd64.zip",
+      "zip": true,
+      "exe_glob": "**/agentsecrets.exe"
+    },
+    {
+      "name": "scrt.exe",
+      "repo": "loderunner/scrt",
+      "asset_glob": "scrt_*_windows_x86_64.zip",
+      "zip": true,
+      "exe_glob": "**/scrt.exe"
+    },
+    {
+      "name": "wtrace.exe",
+      "repo": "lowleveldesign/wtrace",
+      "asset_glob": "wtrace.zip",
+      "zip": true,
+      "exe_glob": "**/wtrace.exe"
+    },
+    {
+      "name": "psmux.exe",
+      "repo": "psmux/psmux",
+      "asset_glob": "psmux-v*-windows-x64.zip",
+      "zip": true,
+      "exe_glob": "**/psmux.exe"
+    },
+    {
+      "name": "dev-browser.exe",
+      "repo": "SawyerHood/dev-browser",
+      "asset_glob": "dev-browser-windows-x64.exe",
+      "zip": false
+    },
+    {
+      "name": "sshpass.exe",
+      "repo": "xhcoding/sshpass-win32",
+      "asset_glob": "sshpass.exe",
+      "zip": false
+    },
+    {
+      "name": "agentspan.exe",
+      "repo": "agentspan-ai/agentspan",
+      "asset_glob": "agentspan_windows_amd64.exe",
+      "zip": false
+    },
+    {
+      "name": "vshell.exe",
+      "repo": "veithly/vibeshell",
+      "asset_glob": "vshell-*-windows-x64.exe",
+      "zip": false
+    }
+  ]
+}

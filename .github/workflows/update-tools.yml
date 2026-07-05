@@ -1,0 +1,58 @@
+name: Update agent-tools binaries
+
+on:
+  schedule:
+    # 06:00 UTC daily
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-agent-tools
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch latest releases & update binaries
+        env:
+          # GITHUB_TOKEN authenticates GitHub API calls (5000/hr) for ALL public repos
+          # and can push back to this repo (contents: write above).
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/update-tools.py
+
+      - name: Detect changes
+        id: diff
+        run: |
+          git add -A
+          # changed if any tracked binary or .tool-versions.json differs from HEAD
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No updates today."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --cached --name-only | sed 's/^/  changed: /'
+          fi
+
+      - name: Commit & push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          DATE=$(date -u +"%Y-%m-%d")
+          git commit -m "chore(tools): auto-update binaries ($DATE)
+
+  Updated by the daily update-tools workflow from upstream GitHub releases.
+  See tools-manifest.json for sources and .tool-versions.json for pinned tags."
+          git push
