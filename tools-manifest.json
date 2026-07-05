@@ -1,5 +1,5 @@
 {
-  "_comment": "Manifest of agent-tools that can be auto-updated from upstream GitHub releases (Windows x64). The updater fetches the latest release of each repo, matches the asset_glob (preferring amd64/x64), downloads it, unzips if 'zip' is true (finding the exe via exe_glob), and renames the result to 'name' (hyphens/suffix stripped to the canonical tool name). Tools without a public Windows release asset are intentionally omitted (see README).",
+  "_comment": "Manifest of agent-tools auto-updated from upstream GitHub releases (Windows x64). Each tool: fetch latest release of `repo`, match `asset_glob` (prefer amd64/x64), compare tag to .tool-versions.json, and if newer: download, unzip if `zip`, extract each output (renaming to canonical name), then store. storage='tree' (default) writes the file into the repo working tree (committed by the workflow); storage='release' uploads it as an asset on this repo's 'large-binaries' GitHub release (for files >100MB that GitHub refuses in normal git). A tool may produce multiple `outputs` from one zip (e.g. uv -> uv.exe+uvw.exe+uvx.exe; ngrep -> ngrep.exe+pcre2-8.dll).",
   "tools": [
     {
       "name": "jq.exe",
@@ -70,11 +70,15 @@
       "exe_glob": "**/task.exe"
     },
     {
-      "name": "uv.exe",
+      "_comment": "uv ships uv.exe + uvw.exe + uvx.exe together in one Windows zip",
       "repo": "astral-sh/uv",
       "asset_glob": "uv-x86_64-pc-windows-msvc.zip",
       "zip": true,
-      "exe_glob": "**/uv.exe"
+      "outputs": [
+        {"exe_glob": "**/uv.exe",  "name": "uv.exe"},
+        {"exe_glob": "**/uvw.exe", "name": "uvw.exe"},
+        {"exe_glob": "**/uvx.exe", "name": "uvx.exe"}
+      ]
     },
     {
       "name": "kagent.exe",
@@ -154,6 +158,61 @@
       "repo": "veithly/vibeshell",
       "asset_glob": "vshell-*-windows-x64.exe",
       "zip": false
+    },
+    {
+      "name": "agent-browser.exe",
+      "repo": "vercel-labs/agent-browser",
+      "asset_glob": "agent-browser-win32-x64.exe",
+      "zip": false
+    },
+    {
+      "_comment": "ngrep zip bundles ngrep.exe + pcre2-8.dll (its runtime dependency)",
+      "repo": "jpr5/ngrep",
+      "asset_glob": "ngrep-windows-x86_64.zip",
+      "zip": true,
+      "outputs": [
+        {"exe_glob": "**/ngrep.exe",    "name": "ngrep.exe"},
+        {"exe_glob": "**/pcre2-8.dll",  "name": "pcre2-8.dll"}
+      ]
+    },
+    {
+      "name": "dbcli.exe",
+      "repo": "tteamtm/dbcli",
+      "asset_glob": "dbcli-win-x64-*.zip",
+      "zip": true,
+      "exe_glob": "**/dbcli.exe"
+    },
+    {
+      "name": "zero.exe",
+      "repo": "vercel-labs/zerolang",
+      "asset_glob": "zero-win32-x64.exe",
+      "zip": false
+    },
+    {
+      "_comment": ">100MB: stored as a release asset on this repo's 'large-binaries' release, not in the git tree",
+      "name": "opencode.exe",
+      "repo": "sst/opencode",
+      "asset_glob": "opencode-windows-x64.zip",
+      "zip": true,
+      "exe_glob": "**/opencode.exe",
+      "storage": "release"
+    },
+    {
+      "_comment": ">100MB: pi.exe (oh-my-pi) renamed to omp.exe; stored as release asset",
+      "name": "omp.exe",
+      "repo": "earendil-works/pi",
+      "asset_glob": "pi-windows-x64.zip",
+      "zip": true,
+      "exe_glob": "**/pi.exe",
+      "storage": "release"
+    },
+    {
+      "name": "usql.exe",
+      "repo": "xo/usql",
+      "asset_glob": "usql-*-windows-amd64.zip",
+      "zip": true,
+      "exe_glob": "**/usql.exe",
+      "storage": "release"
     }
   ]
 }

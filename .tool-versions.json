@@ -1,6 +1,8 @@
 {
+  "agent-browser.exe": "v0.31.1",
   "agentsecrets.exe": "v3.0.0",
   "agentspan.exe": "v0.4.0",
+  "dbcli.exe": "v1.0.26011",
   "dev-browser.exe": "v0.2.8",
   "himalaya.exe": "v1.2.0",
   "jq.exe": "jq-1.8.2",
@@ -9,7 +11,11 @@
   "nats-server.exe": "v2.14.3",
   "nats.exe": "v0.4.0",
   "netwatch.exe": "v0.26.1",
+  "ngrep.exe": "v1.49.0",
+  "omp.exe": "v0.80.3",
+  "opencode.exe": "v1.17.13",
   "opensre.exe": "v0.1.2026.7.5",
+  "pcre2-8.dll": "v1.49.0",
   "psmux.exe": "v3.3.6",
   "rg.exe": "15.1.0",
   "rustnet.exe": "v1.4.0",
@@ -17,9 +23,11 @@
   "sshpass.exe": "v1.0.7",
   "stakpak.exe": "v0.3.88",
   "task.exe": "v3.52.0",
+  "usql.exe": "v0.21.4",
   "uv.exe": "0.11.26",
   "vshell.exe": "v0.1.22",
   "websocat.exe": "v1.14.1",
   "websocketd.exe": "v0.4.1",
-  "wtrace.exe": "3.5-save_output"
+  "wtrace.exe": "3.5-save_output",
+  "zero.exe": "v0.3.4"
 }

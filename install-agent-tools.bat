@@ -12,6 +12,10 @@ setlocal EnableDelayedExpansion
 :: Configuration
 set "INSTALL_DIR=%ProgramFiles%\AgentTools"
 set "SOURCE_DIR=%~dp0"
+set "RELEASE_URL=https://github.com/DrOlu/agent-tools/releases/download/large-binaries"
+:: Large binaries (>100 MB) live on the repo's large-binaries GitHub release,
+:: not in the git tree (GitHub refuses files >100 MB in normal git).
+set "LARGE_TOOLS=opencode.exe omp.exe usql.exe"
 
 echo.
 echo ============================================
@@ -30,7 +34,7 @@ if %errorlevel% neq 0 (
 )
 
 :: Create installation directory
-echo [1/4] Creating installation directory...
+echo [1/5] Creating installation directory...
 if not exist "%INSTALL_DIR%" (
     mkdir "%INSTALL_DIR%"
     if %errorlevel% neq 0 (
@@ -45,7 +49,7 @@ if not exist "%INSTALL_DIR%" (
 
 :: Copy all .exe files
 echo.
-echo [2/4] Copying executables...
+echo [2/5] Copying bundled executables...
 set "COUNT=0"
 for %%F in ("%SOURCE_DIR%*.exe") do (
     set "FILENAME=%%~nxF"
@@ -60,11 +64,25 @@ for %%F in ("%SOURCE_DIR%*.exe") do (
         )
     )
 )
-echo       Copied %COUNT% executable(s)
+echo       Copied %COUNT% bundled executable(s)
+
+echo.
+echo [3/5] Downloading large binaries from GitHub release...
+:: These three exceed GitHub's 100 MB per-file limit and ship as release assets.
+for %%T in (%LARGE_TOOLS%) do (
+    echo       Downloading: %%T
+    curl -L --fail --silent --show-error -o "%INSTALL_DIR%\%%T" "%RELEASE_URL%/%%T"
+    if !errorlevel! neq 0 (
+        echo       [WARNING] Failed to download: %%T
+    ) else (
+        set /a COUNT+=1
+    )
+)
+echo       %COUNT% total executable(s) in place after download
 
 :: Check if already in PATH
 echo.
-echo [3/4] Checking system PATH...
+echo [4/5] Checking system PATH...
 echo %PATH% | find /i "%INSTALL_DIR%" >nul
 if %errorlevel% equ 0 (
     echo       %INSTALL_DIR% is already in PATH
@@ -99,7 +117,7 @@ powershell -Command "[Environment]::SetEnvironmentVariable('Path', [Environment]
 :verify
 :: Verify installation
 echo.
-echo [4/4] Verifying installation...
+echo [5/5] Verifying installation...
 set "VERIFIED=0"
 for %%F in ("%INSTALL_DIR%\*.exe") do (
     set /a VERIFIED+=1

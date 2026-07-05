@@ -89,19 +89,22 @@ copy *.exe "%ProgramFiles%\AgentTools\"
 | `websocat.exe` | websocat | 2 MB |
 | `websocketd.exe` | websocketd | 7 MB |
 | `wtrace.exe` | wtrace | 22 MB |
-| `zero.exe` | zero | 1 MB |
+| `zero.exe` | zero | 15 MB |
+| `opencode.exe` | opencode (CLI) | 158 MB *(release asset — downloaded by installer)* |
+| `omp.exe` | oh-my-pi | 121 MB *(release asset — downloaded by installer)* |
+| `usql.exe` | usql | 147 MB *(release asset — downloaded by installer)* |
 
-## Omitted (exceed GitHub's 100 MB per-file limit)
+## Large binaries (>100 MB)
 
-Three tools exceed GitHub's hard per-file limit and are **not** in this repo. Fetch them separately from their upstream sources:
+Three tools exceed GitHub's 100 MB per-file limit for normal git, so they ship as **assets on this repo's `large-binaries` GitHub release** instead of in the git tree:
 
-| Tool | Approx. size | Source |
-|---|---|---|
-| `opencode.exe` | ~158 MB | https://github.com/sst/opencode/releases |
-| `omp.exe` | ~162 MB | https://github.com/earendil-works/pi (oh-my-pi) releases |
-| `usql.exe` | ~155 MB | https://github.com/xo/usql/releases |
+| Tool | Size | Upstream | Download URL |
+|---|---|---|---|
+| `opencode.exe` | 158 MB | sst/opencode | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/opencode.exe` |
+| `omp.exe` | 121 MB | earendil-works/pi (oh-my-pi) | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/omp.exe` |
+| `usql.exe` | 147 MB | xo/usql | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/usql.exe` |
 
-Drop the downloaded `.exe` into `%ProgramFiles%\AgentTools\` alongside the rest after running the installer.
+`install-agent-tools.bat` **downloads these automatically** with `curl` during install — nothing extra to do. They are kept in sync with upstream by the same daily workflow (see below), which re-uploads a fresh asset whenever a new release appears. `opencode.exe` is the **CLI** build (from `opencode-windows-x64.zip`), not the desktop GUI installer; `omp.exe` is `pi.exe` renamed to the bundle's canonical `omp` name.
 
 ## Automatic updates
 
@@ -110,12 +113,17 @@ A daily GitHub Actions workflow (`.github/workflows/update-tools.yml`, runs at 0
 How it works:
 1. Reads `tools-manifest.json` — a list of tools with their upstream repo, the release-asset glob to match, and (for zips) the glob to find the `.exe` inside.
 2. For each tool, fetches `releases/latest`, matches the Windows x64 asset (preferring amd64/x64, avoiding arm/i386), and compares the tag to `.tool-versions.json`.
-3. If newer: downloads, **unzips** if needed, **renames to the canonical tool name** (stripping version/platform hyphens — e.g. `ripgrep-15.1.0-x86_64-pc-windows-msvc.zip` → `rg.exe`, `agentspan_windows_amd64.exe` → `agentspan.exe`), writes it, records the new tag.
-4. Commits any changes in a single `chore(tools): auto-update binaries (<date>)` commit. No empty commits when nothing changed.
+3. If newer: downloads, **unzips** if needed, **renames to the canonical tool name** (stripping version/platform hyphens — e.g. `ripgrep-15.1.0-x86_64-pc-windows-msvc.zip` → `rg.exe`, `agentspan_windows_amd64.exe` → `agentspan.exe`), then stores the result. A tool may yield **multiple outputs** from one zip (e.g. `uv` → `uv.exe` + `uvw.exe` + `uvx.exe`; `ngrep` → `ngrep.exe` + `pcre2-8.dll`).
+4. **Stores** each output in one of two ways:
+   - `storage: tree` (default, ≤100 MB): writes the file into the repo working tree.
+   - `storage: release` (>100 MB): uploads it as an asset on this repo's `large-binaries` GitHub release (deleting any prior asset of the same name first). The file never enters the git tree.
+5. Commits any tree changes in a single `chore(tools): auto-update binaries (<date>)` commit. No empty commits when nothing changed. Release-asset uploads happen live via the API (no commit needed).
 
-The workflow authenticates to the GitHub API and pushes back with the built-in `GITHUB_TOKEN` — **no stored PAT required**.
+The workflow authenticates to the GitHub API and pushes back with the built-in `GITHUB_TOKEN` (which has `contents: write` — enough to commit, create the release, and upload assets) — **no stored PAT required**.
 
-### Auto-updated tools (23)
+### Auto-updated tools (28 in-tree + 3 release assets = 31)
+
+In-tree tools (≤100 MB, committed to the repo):
 
 | Tool | Upstream repo | Asset |
 |---|---|---|
@@ -129,7 +137,7 @@ The workflow authenticates to the GitHub API and pushes back with the built-in `
 | `websocat.exe` | vi/websocat | `websocat.x86_64-pc-windows-gnu.exe` |
 | `websocketd.exe` | joewalnes/websocketd | `websocketd-*-windows_amd64.zip` |
 | `task.exe` | go-task/task | `task_windows_amd64.zip` |
-| `uv.exe` | astral-sh/uv | `uv-x86_64-pc-windows-msvc.zip` |
+| `uv.exe` + `uvw.exe` + `uvx.exe` | astral-sh/uv | `uv-x86_64-pc-windows-msvc.zip` (one zip → 3 exes) |
 | `kagent.exe` | kagent-dev/kagent | `kagent-windows-amd64.exe` |
 | `multica.exe` | multica-ai/multica | `multica-cli-*-windows-amd64.zip` |
 | `opensre.exe` | Tracer-Cloud/opensre | `opensre_*_windows-x64.zip` |
@@ -142,30 +150,37 @@ The workflow authenticates to the GitHub API and pushes back with the built-in `
 | `sshpass.exe` | xhcoding/sshpass-win32 | `sshpass.exe` |
 | `agentspan.exe` | agentspan-ai/agentspan | `agentspan_windows_amd64.exe` |
 | `vshell.exe` | veithly/vibeshell | `vshell-*-windows-x64.exe` |
+| `agent-browser.exe` | vercel-labs/agent-browser | `agent-browser-win32-x64.exe` |
+| `ngrep.exe` + `pcre2-8.dll` | jpr5/ngrep | `ngrep-windows-x86_64.zip` (one zip → exe + dll) |
+| `dbcli.exe` | tteamtm/dbcli | `dbcli-win-x64-*.zip` |
+| `zero.exe` | vercel-labs/zerolang | `zero-win32-x64.exe` |
 
-### Not auto-updatable (15 + 1 dll)
+Release-asset tools (>100 MB, uploaded to the `large-binaries` release):
 
-These binaries are **not** published as Windows release assets on GitHub — they are custom builds, website-distributed, or source-only — so they cannot be auto-fetched from a release. They are kept as-is (manual update only):
+| Tool | Upstream repo | Asset |
+|---|---|---|
+| `opencode.exe` | sst/opencode | `opencode-windows-x64.zip` |
+| `omp.exe` | earendil-works/pi | `pi-windows-x64.zip` (pi.exe → omp.exe) |
+| `usql.exe` | xo/usql | `usql-*-windows-amd64.zip` |
+
+### Not auto-updatable (8)
+
+These binaries are **not** published as Windows release assets on GitHub — they are custom builds or website-distributed — so they cannot be auto-fetched from a release. They are kept as-is (manual update only):
 
 | Tool | Reason |
 |---|---|
-| `agent-browser.exe` | DrOlu/agent-browser ships via npm + build-from-source; no release binaries |
 | `open-terminal.exe` | DrOlu/open-terminal ships via pip/Docker; no release binaries |
-| `zero.exe` | DrOlu/zero ships via `zerolang.ai/install.sh`; no GitHub releases |
-| `ngrep.exe` | jpr5/ngrep releases have no Windows asset |
-| `pcre2-8.dll` | PCRE2 ships source only; the DLL is a custom build (ngrep dependency) |
 | `plink.exe`, `pscp.exe`, `psftp.exe` | PuTTY distributes via its website, not GitHub releases |
 | `pssh.exe` | no upstream repo publishes a Windows release binary |
 | `pmux.exe` | ShiftInBits/pmux-agent has no Windows asset |
 | `probe.exe` | no upstream repo publishes a Windows release binary |
-| `dbcli.exe` | dbcli/* are Python packages; the standalone `.exe` is a custom build |
 | `pywinrm.exe` | diyan/pywinrm is a Python library; the `.exe` is a custom PyInstaller build |
-| `uvw.exe`, `uvx.exe` | tiny launcher stubs not shipped in astral-sh/uv releases (only `uv.exe` is) |
 | `oauth2l.exe` | google/oauth2l publishes no release assets |
 | `webhook.exe` | adnanh/webhook has no Windows asset |
 
 ## Notes
 
 - All binaries are pre-built for **Windows x64**. For macOS/Linux, see the parallel `neuralOS-macOS-ARM64` and `neuralOS-Linux-x64` distributions.
-- `pcre2-8.dll` is a runtime dependency for `ngrep.exe` — keep them together.
-- This repo holds binaries directly (no LFS). Clone with `--depth 1` for speed: `git clone --depth 1 https://github.com/DrOlu/agent-tools.git`
+- `pcre2-8.dll` is a runtime dependency for `ngrep.exe` — keep them together (both come from the `ngrep` zip and are updated together).
+- The three large binaries (`opencode.exe`, `omp.exe`, `usql.exe`) are **not** in the git tree — they live as assets on the [`large-binaries` release](https://github.com/DrOlu/agent-tools/releases/tag/large-binaries) and are downloaded by `install-agent-tools.bat` at install time.
+- This repo holds the in-tree binaries directly (no LFS). Clone with `--depth 1` for speed: `git clone --depth 1 https://github.com/DrOlu/agent-tools.git`
