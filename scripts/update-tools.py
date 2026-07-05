@@ -132,7 +132,9 @@ def main():
             failed.append((name, repo, str(e)[:120]))
 
     if not dry:
-        json.dump(versions, open(VERSIONS, "w"), indent=2, sort_keys=True)
+        with open(VERSIONS, "w") as f:
+            json.dump(versions, f, indent=2, sort_keys=True)
+            f.write("\n")  # trailing newline keeps the file byte-stable across no-op runs
 
     print("=== agent-tools update summary ===")
     print(f"changed: {len(changed)}")
