@@ -183,6 +183,14 @@
       "exe_glob": "**/dbcli.exe"
     },
     {
+      "_comment": "spiceai ships as .tar.gz (not zip); uses tar:true to extract spice.exe",
+      "name": "spice.exe",
+      "repo": "spiceai/spiceai",
+      "asset_glob": "spice.exe_windows_x86_64.tar.gz",
+      "tar": true,
+      "exe_glob": "**/spice.exe"
+    },
+    {
       "name": "zero.exe",
       "repo": "vercel-labs/zerolang",
       "asset_glob": "zero-win32-x64.exe",

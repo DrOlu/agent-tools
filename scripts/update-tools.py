@@ -7,7 +7,8 @@ Reads tools-manifest.json. For each tool:
   3. If the release tag matches the recorded version (.tool-versions.json) and the
      output file(s) exist, skip — avoids re-downloading unchanged releases.
   4. Download the asset. If `zip`, extract each output (matching its `exe_glob`) and
-     rename to the canonical `name`; otherwise the downloaded file IS the output.
+     rename to the canonical `name`; if `tar`, extract from a .tar.gz similarly;
+     otherwise the downloaded file IS the output.
   5. Store the output(s):
        - storage "tree"   (default): write into the repo working tree (committed by
          the calling workflow). Used for tools <=100 MB.
@@ -28,7 +29,7 @@ Usage:
 Env: GH_TOKEN (GitHub token), GITHUB_REPOSITORY (e.g. "DrOlu/agent-tools",
      auto-set in Actions; set it locally to seed release assets).
 """
-import os, sys, json, fnmatch, io, zipfile, hashlib, urllib.request, urllib.error, urllib.parse
+import os, sys, json, fnmatch, io, zipfile, tarfile, hashlib, urllib.request, urllib.error, urllib.parse
 
 MANIFEST = "tools-manifest.json"
 VERSIONS = ".tool-versions.json"
@@ -156,6 +157,34 @@ def read_from_zip(zip_path, member_glob, want_ext=None):
         chosen = hits[0]
         return chosen, z.read(chosen)
 
+def read_from_tar(tar_path, member_glob, want_ext=None):
+    """Return (member_name, bytes) for the tar.gz entry matching member_glob.
+
+    Mirrors read_from_zip but for .tar.gz archives (e.g. spiceai releases).
+    """
+    with tarfile.open(tar_path, "r:gz") as t:
+        names = t.getnames()
+        g = member_glob.lower()
+        basename_glob = g[3:] if g.startswith("**/") else g.rsplit("/", 1)[-1]
+        def ok(n):
+            nl = n.lower()
+            if want_ext and not nl.endswith(want_ext):
+                return False
+            if fnmatch.fnmatch(nl, g):
+                return True
+            return fnmatch.fnmatch(nl.rsplit("/", 1)[-1], basename_glob)
+        hits = [n for n in names if ok(n)]
+        if not hits:
+            hits = [n for n in names if (not want_ext or n.lower().endswith(want_ext))]
+        if not hits:
+            return None
+        hits.sort(key=lambda n: (len(n), n))
+        chosen = hits[0]
+        f = t.extractfile(chosen)
+        if f is None:
+            return None
+        return chosen, f.read()
+
 def tool_outputs(t):
     """Normalize a manifest entry to a list of {exe_glob, name} outputs and a storage mode."""
     if "outputs" in t:
@@ -236,6 +265,19 @@ def main():
                 os.remove(tmp)
                 if len(produced) != len(outs):
                     continue   # a missing output was already recorded as failed
+            elif t.get("tar"):
+                for o in outs:
+                    want_ext = ".dll" if o["name"].endswith(".dll") else ".exe"
+                    found = read_from_tar(tmp, o["exe_glob"], want_ext=want_ext)
+                    if not found:
+                        found = read_from_tar(tmp, f"**/*{want_ext}", want_ext=want_ext)
+                    if not found:
+                        failed.append((o["name"], repo, f"no file inside tar matching {o['exe_glob']}"))
+                        break
+                    produced.append((o["name"], found[1]))
+                os.remove(tmp)
+                if len(produced) != len(outs):
+                    continue
             else:
                 # single non-zip asset — the downloaded file is the (single) output
                 produced = [(outs[0]["name"], open(tmp, "rb").read())]
