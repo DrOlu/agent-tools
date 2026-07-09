@@ -191,6 +191,44 @@
       "exe_glob": "**/spice.exe"
     },
     {
+      "_comment": "surrealdb ships a standalone .exe (>100MB → release storage)",
+      "name": "surreal.exe",
+      "repo": "surrealdb/surrealdb",
+      "asset_glob": "surreal-*.windows-amd64.exe",
+      "zip": false,
+      "storage": "release"
+    },
+    {
+      "_comment": "inngest.exe inside zip is >100MB → release storage",
+      "name": "inngest.exe",
+      "repo": "inngest/inngest",
+      "asset_glob": "inngest_*_windows_amd64.zip",
+      "zip": true,
+      "exe_glob": "**/inngest.exe",
+      "storage": "release"
+    },
+    {
+      "_comment": "temporal tools (<100MB each → tree storage) from the temporal Windows zip",
+      "repo": "temporalio/temporal",
+      "asset_glob": "temporal_*_windows_amd64.zip",
+      "zip": true,
+      "outputs": [
+        {"exe_glob": "**/tdbg.exe",                     "name": "tdbg.exe"},
+        {"exe_glob": "**/temporal-sql-tool.exe",         "name": "temporal-sql-tool.exe"},
+        {"exe_glob": "**/temporal-cassandra-tool.exe",  "name": "temporal-cassandra-tool.exe"},
+        {"exe_glob": "**/temporal-elasticsearch-tool.exe", "name": "temporal-elasticsearch-tool.exe"}
+      ]
+    },
+    {
+      "_comment": "temporal-server.exe >100MB → release storage (same zip, separate entry)",
+      "name": "temporal-server.exe",
+      "repo": "temporalio/temporal",
+      "asset_glob": "temporal_*_windows_amd64.zip",
+      "zip": true,
+      "exe_glob": "**/temporal-server.exe",
+      "storage": "release"
+    },
+    {
       "name": "zero.exe",
       "repo": "vercel-labs/zerolang",
       "asset_glob": "zero-win32-x64.exe",

@@ -7,6 +7,9 @@ node_modules/
 opencode.exe
 omp.exe
 usql.exe
+surreal.exe
+inngest.exe
+temporal-server.exe
 
 # Updater scratch / cache
 .tmp-*

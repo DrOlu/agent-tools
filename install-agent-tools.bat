@@ -15,7 +15,7 @@ set "SOURCE_DIR=%~dp0"
 set "RELEASE_URL=https://github.com/DrOlu/agent-tools/releases/download/large-binaries"
 :: Large binaries (>100 MB) live on the repo's large-binaries GitHub release,
 :: not in the git tree (GitHub refuses files >100 MB in normal git).
-set "LARGE_TOOLS=opencode.exe omp.exe usql.exe"
+set "LARGE_TOOLS=opencode.exe omp.exe usql.exe surreal.exe inngest.exe temporal-server.exe"
 
 echo.
 echo ============================================
