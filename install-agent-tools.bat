@@ -16,6 +16,9 @@ set "RELEASE_URL=https://github.com/DrOlu/agent-tools/releases/download/large-bi
 :: Large binaries (>100 MB) live on the repo's large-binaries GitHub release,
 :: not in the git tree (GitHub refuses files >100 MB in normal git).
 set "LARGE_TOOLS=opencode.exe omp.exe usql.exe surreal.exe inngest.exe temporal-server.exe"
+:: Multi-file self-contained tools (downloaded as zip, extracted to subdirectory).
+:: These ship as release-asset zips that contain a whole runtime + many DLLs.
+set "ARCHIVE_TOOLS=uiacli-v0.1.0-win-x64.zip"
 
 echo.
 echo ============================================
@@ -80,6 +83,32 @@ for %%T in (%LARGE_TOOLS%) do (
 )
 echo       %COUNT% total executable(s) in place after download
 
+:: Download and extract multi-file archive tools (e.g. uiacli .NET deployment).
+:: Each archive is extracted into its own subdirectory under INSTALL_DIR.
+if not "%ARCHIVE_TOOLS%"=="" (
+    echo.
+    echo [3b/5] Downloading and extracting archive tools...
+    for %%A in (%ARCHIVE_TOOLS%) do (
+        echo       Downloading: %%A
+        curl -L --fail --silent --show-error -o "%TEMP%\%%A" "%RELEASE_URL%/%%A"
+        if !errorlevel! neq 0 (
+            echo       [WARNING] Failed to download: %%A
+        ) else (
+            set "TOOLNAME=%%~nA"
+            set "EXTRACT_DIR=%INSTALL_DIR%\!TOOLNAME!"
+            echo       Extracting to: !EXTRACT_DIR!
+            if not exist "!EXTRACT_DIR!" mkdir "!EXTRACT_DIR!"
+            powershell -NoProfile -Command "Expand-Archive -Path '%TEMP%\%%A' -DestinationPath '!EXTRACT_DIR!' -Force" 2>nul
+            if !errorlevel! neq 0 (
+                echo       [WARNING] Failed to extract: %%A
+            ) else (
+                set /a COUNT+=1
+                del "%TEMP%\%%A" >nul 2>&1
+            )
+        )
+    )
+)
+
 :: Check if already in PATH
 echo.
 echo [4/5] Checking system PATH...
@@ -124,6 +153,13 @@ for %%F in ("%INSTALL_DIR%\*.exe") do (
 )
 echo       Found %VERIFIED% executable(s) in %INSTALL_DIR%
 
+:: Also count executables in archive-tool subdirectories
+for /d %%D in ("%INSTALL_DIR%\*") do (
+    for %%F in ("%%D\*.exe") do (
+        set /a VERIFIED+=1
+    )
+)
+
 :: List installed tools
 echo.
 echo ============================================
@@ -131,6 +167,10 @@ echo   Installed Tools:
 echo ============================================
 for %%F in ("%INSTALL_DIR%\*.exe") do (
     echo   - %%~nF
+)
+:: List archive tools from subdirectories
+for /d %%D in ("%INSTALL_DIR%\*") do (
+    echo   - %%~nxD ^(in %%~nxD\\^)
 )
 
 echo.

@@ -10,6 +10,7 @@ usql.exe
 surreal.exe
 inngest.exe
 temporal-server.exe
+uiacli-v0.1.0-win-x64.zip
 
 # Updater scratch / cache
 .tmp-*

@@ -229,6 +229,15 @@
       "storage": "release"
     },
     {
+      "_comment": "uiacli: Windows UI Automation CLI for AI agents. Self-contained .NET+Go deployment (200MB, 610 files). Store the entire zip as a release asset — no extraction.",
+      "name": "uiacli-v0.1.0-win-x64.zip",
+      "repo": "amitse/uiacli",
+      "asset_glob": "uiacli-*-win-x64.zip",
+      "zip": false,
+      "store_archive": true,
+      "storage": "release"
+    },
+    {
       "name": "zero.exe",
       "repo": "vercel-labs/zerolang",
       "asset_glob": "zero-win32-x64.exe",
