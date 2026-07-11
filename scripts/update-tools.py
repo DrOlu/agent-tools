@@ -278,6 +278,11 @@ def main():
                 os.remove(tmp)
                 if len(produced) != len(outs):
                     continue
+            elif t.get("store_archive"):
+                # Multi-file self-contained deployment (e.g. .NET app with 600+ DLLs).
+                # Upload the entire archive as a release asset — no extraction.
+                produced = [(outs[0]["name"], open(tmp, "rb").read())]
+                os.remove(tmp)
             else:
                 # single non-zip asset — the downloaded file is the (single) output
                 produced = [(outs[0]["name"], open(tmp, "rb").read())]
