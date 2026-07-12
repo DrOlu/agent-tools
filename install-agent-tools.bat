@@ -16,6 +16,9 @@ set "RELEASE_URL=https://github.com/DrOlu/agent-tools/releases/download/large-bi
 :: Large binaries (>100 MB) live on the repo's large-binaries GitHub release,
 :: not in the git tree (GitHub refuses files >100 MB in normal git).
 set "LARGE_TOOLS=opencode.exe omp.exe usql.exe surreal.exe inngest.exe temporal-server.exe"
+:: Installer executables — these are NSIS/MSI installers that must be *run*,
+:: not copied to the bin directory. They are stored in the git tree (small enough).
+set "INSTALLER_TOOLS=Terax-setup.exe"
 :: Multi-file self-contained tools (downloaded as zip, extracted to subdirectory).
 :: These ship as release-asset zips that contain a whole runtime + many DLLs.
 set "ARCHIVE_TOOLS=uiacli-v0.1.0-win-x64.zip"
@@ -50,7 +53,7 @@ if not exist "%INSTALL_DIR%" (
     echo       Directory exists: %INSTALL_DIR%
 )
 
-:: Copy all .exe files
+:: Copy all .exe files (excluding installer tools)
 echo.
 echo [2/5] Copying bundled executables...
 set "COUNT=0"
@@ -58,12 +61,19 @@ for %%F in ("%SOURCE_DIR%*.exe") do (
     set "FILENAME=%%~nxF"
     :: Skip this installer script itself
     if /i not "!FILENAME!"=="install-agent-tools.exe" (
-        echo       Copying: !FILENAME!
-        copy /Y "%%F" "%INSTALL_DIR%\" >nul
-        if !errorlevel! neq 0 (
-            echo       [WARNING] Failed to copy: !FILENAME!
-        ) else (
-            set /a COUNT+=1
+        :: Skip installer tools — handled in step 3c
+        set "IS_INSTALLER=0"
+        for %%I in (%INSTALLER_TOOLS%) do (
+            if /i "!FILENAME!"=="%%I" set "IS_INSTALLER=1"
+        )
+        if !IS_INSTALLER! equ 0 (
+            echo       Copying: !FILENAME!
+            copy /Y "%%F" "%INSTALL_DIR%\" >nul
+            if !errorlevel! neq 0 (
+                echo       [WARNING] Failed to copy: !FILENAME!
+            ) else (
+                set /a COUNT+=1
+            )
         )
     )
 )
@@ -82,6 +92,21 @@ for %%T in (%LARGE_TOOLS%) do (
     )
 )
 echo       %COUNT% total executable(s) in place after download
+
+:: Run installer tools (e.g. Terax NSIS installer)
+if not "%INSTALLER_TOOLS%"=="" (
+    echo.
+    echo [3c/5] Running installer tools...
+    for %%I in (%INSTALLER_TOOLS%) do (
+        echo       Running: %%I
+        "%SOURCE_DIR%%%I" /S
+        if !errorlevel! neq 0 (
+            echo       [WARNING] Installer may need manual run: %%I
+        ) else (
+            echo       Installed: %%I
+        )
+    )
+)
 
 :: Download and extract multi-file archive tools (e.g. uiacli .NET deployment).
 :: Each archive is extracted into its own subdirectory under INSTALL_DIR.

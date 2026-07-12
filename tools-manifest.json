@@ -238,6 +238,13 @@
       "storage": "release"
     },
     {
+      "_comment": "Terax: lightweight terminal-first AI-native dev workspace (Tauri 2 + Rust). Windows NSIS installer stored in tree.",
+      "name": "Terax-setup.exe",
+      "repo": "crynta/terax-ai",
+      "asset_glob": "Terax_*_x64-setup.exe",
+      "zip": false
+    },
+    {
       "name": "zero.exe",
       "repo": "vercel-labs/zerolang",
       "asset_glob": "zero-win32-x64.exe",
