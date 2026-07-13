@@ -15,7 +15,7 @@ set "SOURCE_DIR=%~dp0"
 set "RELEASE_URL=https://github.com/DrOlu/agent-tools/releases/download/large-binaries"
 :: Large binaries (>100 MB) live on the repo's large-binaries GitHub release,
 :: not in the git tree (GitHub refuses files >100 MB in normal git).
-set "LARGE_TOOLS=opencode.exe omp.exe usql.exe surreal.exe inngest.exe temporal-server.exe"
+set "LARGE_TOOLS=opencode.exe omp.exe usql.exe surreal.exe inngest.exe temporal-server.exe raindrop.exe"
 :: Installer executables — these are NSIS/MSI installers that must be *run*,
 :: not copied to the bin directory. They are stored in the git tree (small enough).
 set "INSTALLER_TOOLS=Terax-setup.exe"

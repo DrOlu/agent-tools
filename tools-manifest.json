@@ -245,6 +245,14 @@
       "zip": false
     },
     {
+      "_comment": "raindrop-ai/workshop: local debugger for AI agents (tracing + evals). Binary is 'raindrop' (umbrella CLI). 122MB > 100MB → release storage.",
+      "name": "raindrop.exe",
+      "repo": "raindrop-ai/workshop",
+      "asset_glob": "raindrop-bun-windows-x64.exe",
+      "zip": false,
+      "storage": "release"
+    },
+    {
       "name": "zero.exe",
       "repo": "vercel-labs/zerolang",
       "asset_glob": "zero-win32-x64.exe",
