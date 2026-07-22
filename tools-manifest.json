@@ -2,6 +2,14 @@
   "_comment": "Manifest of agent-tools auto-updated from upstream GitHub releases (Windows x64). Each tool: fetch latest release of `repo`, match `asset_glob` (prefer amd64/x64), compare tag to .tool-versions.json, and if newer: download, unzip if `zip`, extract each output (renaming to canonical name), then store. storage='tree' (default) writes the file into the repo working tree (committed by the workflow); storage='release' uploads it as an asset on this repo's 'large-binaries' GitHub release (for files >100MB that GitHub refuses in normal git). A tool may produce multiple `outputs` from one zip (e.g. uv -> uv.exe+uvw.exe+uvx.exe; ngrep -> ngrep.exe+pcre2-8.dll).",
   "tools": [
     {
+      "_comment": "aperf (AnyPerf): AWS performance analysis tool for Linux/Windows. Windows x64 tarball extracts aperf.exe.",
+      "name": "aperf.exe",
+      "repo": "aws/aperf",
+      "asset_glob": "aperf-v*-windows.tar.gz",
+      "tar": true,
+      "exe_glob": "**/aperf.exe"
+    },
+    {
       "name": "jq.exe",
       "repo": "jqlang/jq",
       "asset_glob": "jq-windows-amd64*.exe",

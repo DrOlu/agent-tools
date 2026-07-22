@@ -13,6 +13,7 @@ A single drop-in folder of standalone `.exe` tools — no installers, no depende
 - **Secrets:** `agentsecrets`, `scrt`
 - **Database:** `dbcli`, `usql` (omitted — see below)
 - **Network & packet diagnostics:** `netwatch`, `rustnet`, `ngrep`, `wtrace`, `probe`, `zero`
+- **Performance analysis:** `aperf` (AWS AnyPerf)
 - **Messaging / RPC:** `nats`, `nats-server`, `websocat`, `websocketd`, `webhook`
 - **SSH / remote exec:** `pssh`, `plink`, `pscp`, `psftp`, `pmux`, `psmux`, `sshpass`, `pywinrm`
 - **Email:** `himalaya`
@@ -49,6 +50,7 @@ copy *.exe "%ProgramFiles%\AgentTools\"
 
 | File | Tool | Size |
 |---|---|---|
+| `aperf.exe` | aperf (AWS AnyPerf) | 12 MB |
 | `agent-browser.exe` | agent-browser | 11 MB |
 | `agentsecrets.exe` | agentsecrets | 13 MB |
 | `agentspan.exe` | agentspan | 14 MB |
@@ -121,7 +123,7 @@ How it works:
 
 The workflow authenticates to the GitHub API and pushes back with the built-in `GITHUB_TOKEN` (which has `contents: write` — enough to commit, create the release, and upload assets) — **no stored PAT required**.
 
-### Auto-updated tools (30 manifest entries → 33 binaries)
+### Auto-updated tools (31 manifest entries → 34 binaries)
 
 In-tree tools (≤100 MB, committed to the repo):
 
@@ -154,6 +156,7 @@ In-tree tools (≤100 MB, committed to the repo):
 | `ngrep.exe` + `pcre2-8.dll` | jpr5/ngrep | `ngrep-windows-x86_64.zip` (one zip → exe + dll) |
 | `dbcli.exe` | tteamtm/dbcli | `dbcli-win-x64-*.zip` |
 | `zero.exe` | vercel-labs/zerolang | `zero-win32-x64.exe` |
+| `aperf.exe` | aws/aperf | `aperf-v*-windows.tar.gz` |
 
 Release-asset tools (>100 MB, uploaded to the `large-binaries` release):
 
