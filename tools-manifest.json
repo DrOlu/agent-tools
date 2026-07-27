@@ -291,6 +291,24 @@
       "zip": true,
       "exe_glob": "**/usql.exe",
       "storage": "release"
+    },
+    {
+      "_comment": "OpenTelemetry Collector core ('standard') distribution. Windows amd64 .tar.gz extracts otelcol.exe (188MB >100MB -> release storage). Glob 'otelcol_*' does not match 'otelcol-contrib_*' (dash vs underscore).",
+      "name": "otelcol.exe",
+      "repo": "open-telemetry/opentelemetry-collector-releases",
+      "asset_glob": "otelcol_*_windows_amd64.tar.gz",
+      "tar": true,
+      "exe_glob": "**/otelcol.exe",
+      "storage": "release"
+    },
+    {
+      "_comment": "OpenTelemetry Collector contrib distribution (all contrib receivers/processors/exporters/extensions/connectors). otelcol-contrib.exe is 378MB -> release storage.",
+      "name": "otelcol-contrib.exe",
+      "repo": "open-telemetry/opentelemetry-collector-releases",
+      "asset_glob": "otelcol-contrib_*_windows_amd64.tar.gz",
+      "tar": true,
+      "exe_glob": "**/otelcol-contrib.exe",
+      "storage": "release"
     }
   ]
 }

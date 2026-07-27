@@ -19,6 +19,7 @@ A single drop-in folder of standalone `.exe` tools — no installers, no depende
 - **Email:** `himalaya`
 - **Runtimes / package managers:** `uv`, `uvw`, `uvx`
 - **Utilities:** `jq`, `rg`, `oauth2l`, `task`
+- **Observability:** `otelcol` (OpenTelemetry Collector core), `otelcol-contrib` (contrib distribution — all receivers/processors/exporters/extensions)
 
 ## Install
 
@@ -95,16 +96,24 @@ copy *.exe "%ProgramFiles%\AgentTools\"
 | `opencode.exe` | opencode (CLI) | 158 MB *(release asset — downloaded by installer)* |
 | `omp.exe` | oh-my-pi | 121 MB *(release asset — downloaded by installer)* |
 | `usql.exe` | usql | 147 MB *(release asset — downloaded by installer)* |
+| `otelcol.exe` | OpenTelemetry Collector (core) | 188 MB *(release asset — downloaded by installer)* |
+| `otelcol-contrib.exe` | OpenTelemetry Collector (contrib) | 378 MB *(release asset — downloaded by installer)* |
 
 ## Large binaries (>100 MB)
 
-Three tools exceed GitHub's 100 MB per-file limit for normal git, so they ship as **assets on this repo's `large-binaries` GitHub release** instead of in the git tree:
+Nine tools exceed GitHub's 100 MB per-file limit for normal git, so they ship as **assets on this repo's `large-binaries` GitHub release** instead of in the git tree:
 
 | Tool | Size | Upstream | Download URL |
 |---|---|---|---|
 | `opencode.exe` | 158 MB | sst/opencode | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/opencode.exe` |
 | `omp.exe` | 121 MB | earendil-works/pi (oh-my-pi) | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/omp.exe` |
 | `usql.exe` | 147 MB | xo/usql | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/usql.exe` |
+| `surreal.exe` | 109 MB | surrealdb/surrealdb | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/surreal.exe` |
+| `inngest.exe` | 100 MB | inngest/inngest | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/inngest.exe` |
+| `temporal-server.exe` | 128 MB | temporalio/temporal | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/temporal-server.exe` |
+| `raindrop.exe` | 117 MB | raindrop-ai/workshop | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/raindrop.exe` |
+| `otelcol.exe` | 188 MB | open-telemetry/opentelemetry-collector-releases (core) | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/otelcol.exe` |
+| `otelcol-contrib.exe` | 378 MB | open-telemetry/opentelemetry-collector-releases (contrib) | `https://github.com/DrOlu/agent-tools/releases/download/large-binaries/otelcol-contrib.exe` |
 
 `install-agent-tools.bat` **downloads these automatically** with `curl` during install — nothing extra to do. They are kept in sync with upstream by the same daily workflow (see below), which re-uploads a fresh asset whenever a new release appears. `opencode.exe` is the **CLI** build (from `opencode-windows-x64.zip`), not the desktop GUI installer; `omp.exe` is `pi.exe` renamed to the bundle's canonical `omp` name.
 
@@ -123,7 +132,7 @@ How it works:
 
 The workflow authenticates to the GitHub API and pushes back with the built-in `GITHUB_TOKEN` (which has `contents: write` — enough to commit, create the release, and upload assets) — **no stored PAT required**.
 
-### Auto-updated tools (31 manifest entries → 34 binaries)
+### Auto-updated tools (41 manifest entries → 47 binaries)
 
 In-tree tools (≤100 MB, committed to the repo):
 
@@ -165,6 +174,13 @@ Release-asset tools (>100 MB, uploaded to the `large-binaries` release):
 | `opencode.exe` | sst/opencode | `opencode-windows-x64.zip` |
 | `omp.exe` | earendil-works/pi | `pi-windows-x64.zip` (pi.exe → omp.exe) |
 | `usql.exe` | xo/usql | `usql-*-windows-amd64.zip` |
+| `surreal.exe` | surrealdb/surrealdb | `surreal-*.windows-amd64.exe` |
+| `inngest.exe` | inngest/inngest | `inngest_*_windows_amd64.zip` |
+| `temporal-server.exe` | temporalio/temporal | `temporal_*_windows_amd64.zip` |
+| `raindrop.exe` | raindrop-ai/workshop | `raindrop-bun-windows-x64.exe` |
+| `uiacli-v0.1.0-win-x64.zip` | amitse/uiacli | `uiacli-*-win-x64.zip` (stored as archive) |
+| `otelcol.exe` | open-telemetry/opentelemetry-collector-releases | `otelcol_*_windows_amd64.tar.gz` (core) |
+| `otelcol-contrib.exe` | open-telemetry/opentelemetry-collector-releases | `otelcol-contrib_*_windows_amd64.tar.gz` (contrib) |
 
 ### Not auto-updatable (8)
 
@@ -185,5 +201,5 @@ These binaries are **not** published as Windows release assets on GitHub — the
 
 - All binaries are pre-built for **Windows x64**. For macOS/Linux, see the parallel `neuralOS-macOS-ARM64` and `neuralOS-Linux-x64` distributions.
 - `pcre2-8.dll` is a runtime dependency for `ngrep.exe` — keep them together (both come from the `ngrep` zip and are updated together).
-- The three large binaries (`opencode.exe`, `omp.exe`, `usql.exe`) are **not** in the git tree — they live as assets on the [`large-binaries` release](https://github.com/DrOlu/agent-tools/releases/tag/large-binaries) and are downloaded by `install-agent-tools.bat` at install time.
+- The large binaries (>100 MB — `opencode.exe`, `omp.exe`, `usql.exe`, `surreal.exe`, `inngest.exe`, `temporal-server.exe`, `raindrop.exe`, `otelcol.exe`, `otelcol-contrib.exe`) are **not** in the git tree — they live as assets on the [`large-binaries` release](https://github.com/DrOlu/agent-tools/releases/tag/large-binaries) and are downloaded by `install-agent-tools.bat` at install time.
 - This repo holds the in-tree binaries directly (no LFS). Clone with `--depth 1` for speed: `git clone --depth 1 https://github.com/DrOlu/agent-tools.git`
